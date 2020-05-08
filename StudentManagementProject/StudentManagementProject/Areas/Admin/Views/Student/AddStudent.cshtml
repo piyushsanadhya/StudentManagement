@@ -1,0 +1,225 @@
+﻿@model StudentViewModel
+@{
+    ViewData["Title"] = "AddStudent";
+}
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+}
+<div class="row">
+    <div class="col-xs-12 col-md-12">
+        <h3 class="text-center"><i class="fas fa-user"></i> Student Details</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-md-12 pt-3 pb-3 border border-dark">
+            <div class="row addRow">
+                <div class="col-md-6 col-xs-6">
+                    <h4><i class="fas fa-user"></i> Add Student</h4>
+                </div>
+                <div class="col-md-6 col-xs-6">
+                    <button class="btn btn-primary float-right" id="btnShowAdd"><i class="fas fa-plus-circle"></i></button>
+                </div>
+            </div>
+            <form asp-area="Admin" asp-controller="Student" id="addStudent" asp-action="AddStudent" method="post" class="form" style="display:none" data-bind="submit:submit">
+                <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input asp-for="FirstName" class="form-control" placeholder="First Name" />
+                            <span class="text-danger" asp-validation-for="FirstName"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <input asp-for="MiddleName" class="form-control" placeholder="Middle Name" />
+                            <span class="text-danger" asp-validation-for="MiddleName"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <input asp-for="LastName" class="form-control" placeholder="Last Name" />
+                            <span class="text-danger" asp-validation-for="LastName"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input asp-for="Class" class="form-control" placeholder="Class" />
+                            <span class="text-danger" asp-validation-for="Class"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <input asp-for="Section" class="form-control" placeholder="Section" />
+                            <span class="text-danger" asp-validation-for="Section"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input asp-for="Email" class="form-control" placeholder="Student Email" />
+                            <span class="text-danger" asp-validation-for="Email"></span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" data-bind="click:submit">Save</button><button id="cancel" class="ml-2 btn btn-danger">Cancel</button>
+            </form>
+        </div>
+        <div class="col-md-12 mt-3">
+            <div class="row">
+                <div class="col-md-12">
+                    <table id="tblStudents" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Section</th>
+                                <th>Email</th>
+                                <th>Edit</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteStudentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Delete Student</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-area="Admin" asp-controller="Student" id="deleteStudent" asp-action="DeleteStudent">
+                    <input type="hidden" name="StudentId" id="studentId" />
+                    <p>
+                        Do you want to delete <span id="fullName"></span> with <span id="emailUser"></span> email?
+                    </p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bind="click:submitModal">Delete</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        var model = JSON.parse('@(Html.Raw(HttpUtility.JavaScriptStringEncode(JsonConvert.SerializeObject(Model))))')
+        var viewModel = function () {
+            var self = this;
+
+            self.isEdit = ko.observable(model.IsEdit);
+
+            if (self.isEdit()) {
+                $(".addRow").slideToggle();
+                $(".form").slideToggle();
+            }
+
+            self.submit = function () {
+                var form = $("#addStudent")
+                    .removeData("validator") /* added by the raw jquery.validate plugin */
+                    .removeData("unobtrusiveValidation");  /* added by the jquery unobtrusive plugin*/
+
+                $.validator.unobtrusive.parse(form);
+
+                if ($("#addStudent").valid()) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            };
+
+            self.submitModal = function () {
+                var formDelete = $("#deleteStudent");
+
+                $.ajaxGet(formDelete.attr("action") + "?studentId=" + $("#studentId").val(), function (data) {
+                    if (data.error) {
+                        alert(data.message);
+                    }
+                    if (data.success) {
+                        window.location.href = '/admin/student/add-student';
+                    }
+                });
+            };
+        };
+
+        ko.applyBindings(new viewModel());
+
+        let table;
+
+        $(document).ready(function () {
+            $("#btnShowAdd").on("click", ".addRow", function () {
+                $(".addRow").slideToggle();
+                $(".form").slideToggle();
+            })
+
+            $(".addRow").on("click", function () {
+                $(".addRow").slideToggle()
+                $(".form").slideToggle();
+            })
+
+            table = $('#tblStudents').DataTable({
+                "oLanguage": { "sEmptyTable": "no students added." },
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    url: '/Admin/Student/GetStudents',
+                    type: 'POST',
+                    "datatype" : "json",
+                    data: function (data, call) {
+
+                    }
+                },
+                'columnDefs': [{
+                    'targets': 4,
+                    'searchable': false,
+                    'orderable': false,
+                    'render': function (data, type, full, meta) {
+                        return '<button class="btn btn-primary btnGeneral" title="Modify details" data-studentid="' + $('<div/>').text(data).html() + '"><i class="fas fa-tools"></i></button>&nbsp<button class="btn btn-danger btnDelete" title="Delete Student" data-fullname="' + full.fullName + '" data-email="' + full.email +'" data-studentid="' + $('<div/>').text(data).html() + '"><i class="fas fa-trash"></i></button>';
+                    }
+                }],
+                "columns": [
+                    { "data": "fullName", "className": "text-center" },
+                    { "data": "class", "className": "text-center" },
+                    { "data": "section", "className": "text-center" },
+                    { "data": "email", "className": "text-center" },
+                    { "data": "id", "className": "text-center" }
+                ],
+            });
+
+            $("#cancel").on("click", function (e) {
+                e.preventDefault();
+                if (model.IsEdit) {
+                    window.location.href = "/admin/student/add-student"
+                }
+                $(".addRow").slideToggle();
+                $(".form").slideToggle();
+            });
+
+            $("#tblStudents").on("click", ".btnGeneral", function () {
+                var studentId = $(this).data("studentid");
+                window.location.href = '/admin/student/add-student?id=' + studentId;
+            });
+
+            $("#tblStudents").on("click", ".btnDelete", function () {
+                var studentId = $(this).data("studentid");
+                var fullName = $(this).data("fullname");
+                var email = $(this).data("email");
+                $("#studentId").val(studentId);
+                $("#fullName").html(fullName);
+                $("#emailUser").html(email);
+                $("#deleteStudentModal").modal('show');
+            })
+        });
+    </script>
+}
