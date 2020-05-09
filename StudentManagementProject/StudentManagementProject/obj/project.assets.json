@@ -13044,11 +13044,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Anjali\\source\\repos\\StudentManagementProject\\StudentManagementProject\\StudentManagementProject.csproj",
+      "projectUniqueName": "C:\\Users\\Anjali\\source\\repos\\StudentManagement\\StudentManagementProject\\StudentManagementProject\\StudentManagementProject.csproj",
       "projectName": "StudentManagementProject",
-      "projectPath": "C:\\Users\\Anjali\\source\\repos\\StudentManagementProject\\StudentManagementProject\\StudentManagementProject.csproj",
+      "projectPath": "C:\\Users\\Anjali\\source\\repos\\StudentManagement\\StudentManagementProject\\StudentManagementProject\\StudentManagementProject.csproj",
       "packagesPath": "C:\\Users\\Anjali\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Anjali\\source\\repos\\StudentManagementProject\\StudentManagementProject\\obj\\",
+      "outputPath": "C:\\Users\\Anjali\\source\\repos\\StudentManagement\\StudentManagementProject\\StudentManagementProject\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
